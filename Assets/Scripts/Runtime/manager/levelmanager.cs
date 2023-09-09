@@ -2,6 +2,7 @@ using System;
 using Runtime.commands.Level;
 using Runtime.Data.UnityObjects;
 using Runtime.Data.ValueObjects;
+using Runtime.Enums;
 using signals;
 using UnityEditor.iOS;
 using UnityEngine;
@@ -81,6 +82,7 @@ namespace manager
         {
             CoreGameSignals.Instance.OnLevelInitialize?.Invoke((byte)(_currentlevel%totallevelcount));
             //uısignals.
+            CoreUIsignals.Instance.onOpenPanel?.Invoke(UIPanelTypes.start,1);
         }
 
         private void OnNextlevel()

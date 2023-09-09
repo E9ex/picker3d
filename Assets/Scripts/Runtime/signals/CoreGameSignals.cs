@@ -25,6 +25,8 @@ namespace signals
         public UnityAction<byte>OnLevelInitialize= delegate {  };
         public UnityAction OnClearActiveLevel= delegate {  };
         public UnityAction OnNextlevel= delegate {  };
+        public UnityAction OnlevelSuccesful=delegate {  };
+        public UnityAction Onlevelfailed =delegate {  };
         public UnityAction OnRestartlevel= delegate {  };
         public UnityAction OnReset=delegate {  };
         public Func<byte>OnGetLevelValue= delegate { return 0;};
