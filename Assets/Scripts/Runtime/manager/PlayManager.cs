@@ -12,7 +12,7 @@ namespace Runtime.manager
 {
     public class PlayManager : MonoBehaviour
     {
-        public static byte stagevalue;
+        public  byte stagevalue;
         internal forceballstopoolcommand forcecommand;
 
         [SerializeField] public playermovementcontroller _playermovementcontroller;

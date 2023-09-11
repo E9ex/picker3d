@@ -1,4 +1,6 @@
 using System;
+using DG.Tweening;
+using Runtime.controller.Pool;
 using Runtime.manager;
 using signals;
 using UnityEditor.Experimental.GraphView;
@@ -22,6 +24,21 @@ namespace Runtime.controller.Player
                 _manager.forcecommand.execute();
                 CoreGameSignals.Instance.onStageAreaEntered?.Invoke();
                 InputSignals.Instance.OndisableInput?.Invoke();
+                DOVirtual.DelayedCall(3, () =>
+                {
+                    var result = other.transform.parent.GetComponentInChildren<PoolController>()
+                        .takeresults(_manager.stagevalue);
+                    if (result)
+                    {
+                        CoreGameSignals.Instance.onStageAreaSuccesful?.Invoke(_manager.stagevalue);
+                        InputSignals.Instance.OnenableInput?.Invoke();
+                    }
+                    else
+                    {
+                        CoreGameSignals.Instance.Onlevelfailed?.Invoke();
+                    }
+                });
+                return;
             }
 
             if (other.CompareTag(finish))
@@ -31,6 +48,15 @@ namespace Runtime.controller.Player
                 CoreGameSignals.Instance.OnlevelSuccesful?.Invoke();
                 return;
             }
+        }
+
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            var transform1 = _manager.transform;
+            var position1 = transform1.position;
+            
+            Gizmos.DrawSphere(new Vector3(position1.x,position1.y+1f,position1.z+1f),1.35f);
         }
 
         public void Onreset()
