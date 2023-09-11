@@ -15,9 +15,9 @@ namespace Runtime.manager
         public static byte stagevalue;
         internal forceballstopoolcommand forcecommand;
 
-        [SerializeField] private static playermovementcontroller _playermovementcontroller;
-        [SerializeField] private static playermeshcontroller _playermeshcontroller;
-        [SerializeField] private static playerphysicsController _playerphysicsController;
+        [SerializeField] public playermovementcontroller _playermovementcontroller;
+        [SerializeField] public playermeshcontroller _playermeshcontroller;
+        [SerializeField] public playerphysicsController _playerphysicsController;
 
         private PlayerData _data;
 
@@ -47,7 +47,7 @@ namespace Runtime.manager
             SubscribeEvents();
         }
 
-        private static void SubscribeEvents()
+        private void SubscribeEvents()
         {
             InputSignals.Instance.OnInputTaken += OnInputTaken;
             InputSignals.Instance.OnInputReleased += OnInputReleased;
@@ -55,64 +55,65 @@ namespace Runtime.manager
             UISignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.OnlevelSuccesful += OnlevelSuccesful;
             CoreGameSignals.Instance.Onlevelfailed += Onlevelfailed;
-            CoreGameSignals.Instance.onStageAreaEntered +=  OnStageAreaEntered;
-            CoreGameSignals.Instance.onStageAreaSuccesful +=  OnStageAreaSuccesful;
+            CoreGameSignals.Instance.onStageAreaEntered += OnStageAreaEntered;
+            CoreGameSignals.Instance.onStageAreaSuccesful += OnStageAreaSuccesful;
             CoreGameSignals.Instance.onFinishAreadEntered += OnFinishAreadEntered;
             CoreGameSignals.Instance.OnReset += Onreset;
         }
 
-        private static void Onreset()
+        private void Onreset()
         {
             stagevalue = 0;
-            _playermovementcontroller.onreset();
-            _playerphysicsController.onreset();
+            _playermovementcontroller.Onreset();
+            _playerphysicsController.Onreset();
             _playermeshcontroller.Onreset();
         }
 
-       
-
-        private static void OnFinishAreadEntered()
+        private void OnFinishAreadEntered()
         {
-           CoreGameSignals.Instance.OnlevelSuccesful?.Invoke();
-        }
-        private static void OnStageAreaSuccesful(byte value)
-        {
-            stagevalue = (byte)++value;
-        }
-        private static void OnStageAreaEntered()
-        {
-            _playermovementcontroller._isreadytoPlay(false);
+            CoreGameSignals.Instance.OnlevelSuccesful?.Invoke();
         }
 
-        static void OnlevelSuccesful()
+        private void OnStageAreaSuccesful(byte value)
         {
-            _playermovementcontroller._isreadytoPlay(false);
+            stagevalue = (byte)(value + 1);
         }
 
-        static void Onlevelfailed()
+        private void OnStageAreaEntered()
         {
-            _playermovementcontroller._isreadytoPlay(false);
+            _playermovementcontroller.IsreadyToPlay(false);
         }
 
-        static void OnPlay()
+        private void OnlevelSuccesful()
         {
-            _playermovementcontroller._isreadytoPlay(true);
+            _playermovementcontroller.IsreadyToPlay(false);
         }
 
-        private static void OnInputDragged(horizontalInputParams Inputparams)
+        private void Onlevelfailed()
+        {
+            _playermovementcontroller.IsreadyToPlay(false);
+        }
+
+        private void OnPlay()
+        {
+            _playermovementcontroller.IsreadyToPlay(true);
+        }
+
+        private void OnInputDragged(horizontalInputParams Inputparams)
         {
             _playermovementcontroller.updateInputParams(Inputparams);
         }
 
-        static void OnInputTaken()
+        private void OnInputTaken()
         {
-            _playermovementcontroller.IsreadyToMove(false);
+            _playermovementcontroller.IsreadyTomove(false);
         }
 
-        static void OnInputReleased()
+        private void OnInputReleased()
         {
-            _playermovementcontroller.IsreadyToMove(true);
+            _playermovementcontroller.IsreadyTomove(true);
         }
+
         private void UnsubscribeEvents()
         {
             InputSignals.Instance.OnInputTaken -= OnInputTaken;
@@ -121,8 +122,8 @@ namespace Runtime.manager
             UISignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.OnlevelSuccesful -= OnlevelSuccesful;
             CoreGameSignals.Instance.Onlevelfailed -= Onlevelfailed;
-            CoreGameSignals.Instance.onStageAreaEntered -=  OnStageAreaEntered;
-            CoreGameSignals.Instance.onStageAreaSuccesful -=  OnStageAreaSuccesful;
+            CoreGameSignals.Instance.onStageAreaEntered -= OnStageAreaEntered;
+            CoreGameSignals.Instance.onStageAreaSuccesful -= OnStageAreaSuccesful;
             CoreGameSignals.Instance.onFinishAreadEntered -= OnFinishAreadEntered;
             CoreGameSignals.Instance.OnReset -= Onreset;
         }

@@ -12,7 +12,7 @@ namespace Runtime.controller.Player
         [SerializeField] private new Collider _collider;
         [SerializeField] private new Rigidbody _rigidbody;
 
-        private const string finish = "stageArea";
+        private const string finish = "finish";
         private const string stagearea = "stageArea";
 
         private void OnTriggerEnter(Collider other)
@@ -31,6 +31,11 @@ namespace Runtime.controller.Player
                 CoreGameSignals.Instance.OnlevelSuccesful?.Invoke();
                 return;
             }
+        }
+
+        public void Onreset()
+        {
+            
         }
     }
 }

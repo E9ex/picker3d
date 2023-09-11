@@ -11,6 +11,7 @@ namespace signals
         #region singelton
 
         public static InputSignals Instance;
+        
 
         private void Awake()
         {

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace signals
+namespace Runtime.signals
 {
     public class CameraSignals : MonoBehaviour
     {

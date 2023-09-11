@@ -11,43 +11,45 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace manager
+namespace Runtime.manager
 {
     public class InputManager : MonoBehaviour
     {
         private InputData _data;
-        private bool _isavailablefortouch, _isfirstTimetouchtaken,_istouching;
+        private bool _isavailablefortouch, _isfirstTimetouchtaken, _istouching;
         private float _currentVelocity;
         private float3 _moveVector;
-        private Vector2? _Mouseposition;//reftype
+        private Vector2? _Mouseposition;
 
         private void Awake()
         {
-            _data = Getınputdata();
+            _data = GetInputdata();
         }
 
-        private InputData Getınputdata()
+        private InputData GetInputdata()
         {
             return Resources.Load<CD_Input>("Data/CD_Input").data;
         }
 
         private void OnEnable()
         {
-            subscribeevent();
+            SubscribeEvent();
         }
 
-        private  void subscribeevent()
+        private void SubscribeEvent()
         {
-            CoreGameSignals.Instance.OnReset += OnReset;
-            InputSignals.Instance.OnenableInput += OnEnableInput;
-            InputSignals.Instance.OndisableInput += OndisableInput;
+            if (CoreGameSignals.Instance != null)
+                CoreGameSignals.Instance.OnReset += OnReset;
+            if (InputSignals.Instance != null)
+            {
+                InputSignals.Instance.OnenableInput += OnEnableInput;
+                InputSignals.Instance.OndisableInput += OndisableInput;
+            }
         }
 
-       
-        private  void OndisableInput()
+        private void OndisableInput()
         {
             _isavailablefortouch = false;
-          
         }
 
         private void OnEnableInput()
@@ -55,37 +57,39 @@ namespace manager
             _isavailablefortouch = true;
         }
 
-
-        private  void OnReset()
+        private void OnReset()
         {
             _isavailablefortouch = false;
-           // _isfirstTimetouchtaken = false;
             _istouching = false;
         }
 
-        private void unsubscribeEvent()
+        private void UnsubscribeEvent()
         {
-            CoreGameSignals.Instance.OnReset -= OnReset;
-            InputSignals.Instance.OnenableInput -= OnEnableInput;
-            InputSignals.Instance.OndisableInput -= OndisableInput;
+            if (CoreGameSignals.Instance != null)
+                CoreGameSignals.Instance.OnReset -= OnReset;
+            if (InputSignals.Instance != null)
+            {
+                InputSignals.Instance.OnenableInput -= OnEnableInput;
+                InputSignals.Instance.OndisableInput -= OndisableInput;
+            }
         }
 
         private void OnDisable()
         {
-            unsubscribeEvent();
+            UnsubscribeEvent();
         }
 
         private void Update()
         {
             if (!_isavailablefortouch) return;
 
-            if (Input.GetMouseButtonUp(0)&& !IspointerOverUIElement())
+            if (Input.GetMouseButtonUp(0) && !IsPointerOverUIElement())
             {
                 _istouching = false;
                 InputSignals.Instance.OnInputReleased?.Invoke();
             }
 
-            if (Input.GetMouseButtonUp(0)&& !IspointerOverUIElement())
+            if (Input.GetMouseButtonDown(0) && !IsPointerOverUIElement())
             {
                 _istouching = true;
                 InputSignals.Instance.OnInputTaken?.Invoke();
@@ -97,20 +101,16 @@ namespace manager
 
                 _Mouseposition = Input.mousePosition;
             }
-            if (Input.GetMouseButton(0)&& !IspointerOverUIElement())
+            if (Input.GetMouseButton(0) && !IsPointerOverUIElement())
             {
                 if (_istouching)
                 {
-                    if (_Mouseposition!=null)
+                    if (_Mouseposition != null)
                     {
                         Vector2 mouseDeltaPos = (Vector2)Input.mousePosition - _Mouseposition.Value;
-                        if (mouseDeltaPos.x>_data.HorizontalInputSpeed)
+                        if (Mathf.Abs(mouseDeltaPos.x) > _data.HorizontalInputSpeed)
                         {
                             _moveVector.x = _data.HorizontalInputSpeed / 10f * mouseDeltaPos.x;
-                        }
-                        else if (mouseDeltaPos.x<_data.HorizontalInputSpeed)
-                        {
-                            _moveVector.x = -_data.HorizontalInputSpeed / 10f * mouseDeltaPos.x;
                         }
                         else
                         {
@@ -120,7 +120,7 @@ namespace manager
                         _Mouseposition = Input.mousePosition;
                         InputSignals.Instance.OnInputDragged?.Invoke(new horizontalInputParams()
                         {
-                            horizontalValue = _moveVector.x, 
+                            horizontalValue = _moveVector.x,
                             clampValues = _data.clampValues
                         });
                     }
@@ -128,16 +128,15 @@ namespace manager
             }
         }
 
-        private bool IspointerOverUIElement()
+        private bool IsPointerOverUIElement()
         {
-            var eventdata = new PointerEventData(EventSystem.current)
+            var eventData = new PointerEventData(EventSystem.current)
             {
                 position = Input.mousePosition
             };
             List<RaycastResult> results = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(eventdata,results);
+            EventSystem.current.RaycastAll(eventData, results);
             return results.Count > 0;
         }
-
     }
 }

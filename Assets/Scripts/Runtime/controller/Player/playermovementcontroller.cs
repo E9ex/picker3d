@@ -10,7 +10,8 @@ namespace Runtime.controller.Player
     {
         [SerializeField] private new Rigidbody _rigidbody;
         private playermovementData data;
-        [SerializeField]private bool _isreadytoPlay,IsreadyToMove;
+        [SerializeField] public bool _isreadytoPlay;
+        [SerializeField]private bool IsreadyToMove;
 
         private float xvalue;
         private float2 _clampValues;
